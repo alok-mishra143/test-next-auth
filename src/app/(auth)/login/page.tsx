@@ -19,14 +19,11 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { GetSession } from "@/action/Useraction";
+import { signInSchema } from "@/lib/zod";
 
 // Zod schema for login
-export const LoginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
-});
 
-type FormValues = z.infer<typeof LoginSchema>;
+type FormValues = z.infer<typeof signInSchema>;
 
 const LoginPage = () => {
   const router = useRouter();
@@ -34,7 +31,7 @@ const LoginPage = () => {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(LoginSchema),
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
       password: "",
