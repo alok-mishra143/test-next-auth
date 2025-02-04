@@ -2,14 +2,14 @@ import { GetUserById } from "@/action/Useraction";
 import OnBoardingFrom from "@/components/CustomComponents/OnBoardingFrom";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 interface OnboardingProps {
-  params: {
-    userid: string;
-  };
+  params: { userid: string };
 }
 
 const Page = async ({ params }: OnboardingProps) => {
-  const { userid } = await params;
+  const { userid } = await Promise.resolve(params); // ✅ Ensure params is awaited
 
   const userData = await GetUserById({ userid });
 
