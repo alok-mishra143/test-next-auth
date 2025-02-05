@@ -167,3 +167,20 @@ export const OnBoardingSubmit = async ({
     );
   }
 };
+
+export const UpdateUserOnboarding = async ({ id }: { id: string }) => {
+  try {
+    const result = await db
+      .update(users)
+      .set({ onboardingCompleted: true })
+      .where(eq(users.id, id))
+      .returning();
+
+    return result[0];
+  } catch (error) {
+    console.error("Update onboarding error:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to update user data"
+    );
+  }
+};

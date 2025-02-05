@@ -30,6 +30,7 @@ export const users = pgTable("users", {
   role: userRole("role").notNull().default("STUDENT"),
   address: varchar("address", { length: 255 }).default(""),
   isVerified: boolean("is_verified").notNull().default(false),
+  onboardingCompleted: boolean("onboarding_completed").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
