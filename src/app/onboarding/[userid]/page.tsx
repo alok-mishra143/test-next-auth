@@ -5,11 +5,11 @@ import React from "react";
 export const dynamic = "force-dynamic";
 
 interface OnboardingProps {
-  params: { userid: string };
+  params: Promise<{ userid: string }>;
 }
 
 const Page = async ({ params }: OnboardingProps) => {
-  const { userid } = await Promise.resolve(params); // ✅ Ensure params is awaited
+  const { userid } = await params;
 
   const userData = await GetUserById({ userid });
 
@@ -25,7 +25,7 @@ const Page = async ({ params }: OnboardingProps) => {
     <OnBoardingFrom
       UserData={{
         ...userData,
-        gender: userData.gender as "MALE" | "FEMALE" | "OTHERS",
+        gender: (userData.gender as "MALE" | "FEMALE" | "OTHERS") ?? "OTHERS",
       }}
     />
   );

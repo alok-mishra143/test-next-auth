@@ -1,6 +1,6 @@
 "use client";
 
-import { GetSession, SignOutAction } from "@/action/Useraction";
+import { GetSession, GetUserById, SignOutAction } from "@/action/Useraction";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -20,6 +20,14 @@ export default function Home() {
         const session = await GetSession();
         if (!session) {
           router.push("/login");
+        }
+        if (session?.user.id) {
+          const userData = await GetUserById({ userid: session?.user.id });
+          if (!userData) {
+            router.push("/login");
+          } else if (userData.onboardingCompleted === false) {
+            router.push(`/onboarding/${session?.user.id}`);
+          }
         }
         console.log(session);
       } catch (error) {

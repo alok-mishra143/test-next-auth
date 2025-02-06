@@ -57,7 +57,7 @@ const SignupPage = () => {
         form.reset();
         toast.success("Account created successfully");
         // Handle successful signup (redirect or show success message)
-        router.push(`/onboarding/${result.id}`);
+        router.push(`/login`);
       }
     } catch (error) {
       console.error("Signup error:", error);

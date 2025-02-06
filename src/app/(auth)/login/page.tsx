@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { GetSession } from "@/action/Useraction";
+import { GetSession, GetUserById } from "@/action/Useraction";
 import { signInSchema } from "@/lib/zod";
 
 // Zod schema for login
@@ -39,6 +39,7 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (values: FormValues) => {
+    const session = await GetSession();
     try {
       setLoading(true);
       setServerError(null);
@@ -53,6 +54,21 @@ const LoginPage = () => {
         toast.error("Invalide Crediential or Password"); // Display error message
       } else {
         toast.success("Logged in successfully");
+        if (session?.user.id) {
+          const userData = await GetUserById({ userid: session?.user.id });
+          if (!userData) {
+            return (
+              <div className="text-center text-red-500 font-bold text-xl p-4 border border-red-500 rounded-md">
+                User not found
+              </div>
+            );
+          } else if (userData.onboardingCompleted === false) {
+            router.push(`/onboarding/${session?.user.id}`);
+          } else if (userData.onboardingCompleted === true) {
+            router.push(`/`);
+          }
+        }
+
         router.push("/");
       }
     } catch (error) {
