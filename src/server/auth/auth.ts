@@ -3,6 +3,7 @@ import { signInSchema } from "./../../lib/zod";
 import NextAuth, { CredentialsSignin } from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "../db";
+
 import Credentials from "next-auth/providers/credentials";
 import { LoginAction } from "@/action/Useraction";
 
@@ -14,6 +15,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
+      name?: string;
       email?: string;
       role?: string;
     };
@@ -45,6 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           return {
             id: String(result.id),
+            name: result.name,
             email: result.email,
             role: result.role,
           };
@@ -72,6 +75,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // Persist user data in token
       if (user) {
         token.id = user.id;
+        token.name = user.name;
         token.role = user.role;
         token.email = user.email;
       }
@@ -87,6 +91,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       if (token?.role) {
         session.user.role = token.role as string;
+      }
+      if (token?.name) {
+        session.user.name = token.name as string;
       }
       return session;
     },

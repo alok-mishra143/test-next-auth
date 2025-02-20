@@ -79,6 +79,7 @@ export const LoginAction = async ({ email, password }: LoginProps) => {
   console.log("user", user);
   return {
     id: user.id,
+    name: user.name,
     email: user.email,
     password: user.password,
     role: user.role,
