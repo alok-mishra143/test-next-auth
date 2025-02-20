@@ -51,3 +51,14 @@ export const onboardingValidationSchema = z.object({
   department: z.string().optional(),
   class: z.string().optional(),
 });
+
+export const userSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email").min(1, "Email is required"),
+  phone: z.string().min(1, "Phone number is required"),
+  address: z.string().min(1, "Address is required"),
+  gender: z.enum(["MALE", "FEMALE", "OTHERS"]),
+  department: z.string().optional(),
+  class: z.string().optional(),
+  role: z.enum(["STUDENT", "TEACHER", "ADMIN"]).default("STUDENT"),
+});
