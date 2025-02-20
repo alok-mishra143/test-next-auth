@@ -8,7 +8,7 @@ import { users } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
 export const SignupAction = async (values: SignupProps) => {
-  const { name, email, password, confirmPassword, role } =
+  const { name, email, password, role } =
     await SignUpSchema.parseAsync(values);
   try {
     const trimmedEmail = email.trim().toLowerCase();
@@ -20,7 +20,6 @@ export const SignupAction = async (values: SignupProps) => {
       .where(eq(users.email, trimmedEmail))
       .then((result) => result[0]);
 
-    console.log("existingUser", existingUser);
 
     if (existingUser) throw new Error("Email already registered");
 
