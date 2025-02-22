@@ -9,7 +9,7 @@ const layout = ({ children }: ILayout) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className="flex flex-col w-full h-screen overflow-y-auto">
         <SidebarTrigger />
 
         {children}

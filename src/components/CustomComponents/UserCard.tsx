@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,27 +16,18 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { GetSession } from "@/action/Useraction";
 import { ConfirmDelete } from "./ConformDelete";
 import EditProfile from "./EditProfile";
+import { Session } from "next-auth";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  gender: string | null;
-  profileImage?: string | null;
-  phone: string | null;
-  department: string | null;
-  class: string | null;
-  role: "STUDENT" | "TEACHER" | "ADMIN";
-  address: string | null;
-  isVerified: boolean;
-  onboardingCompleted: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const UserCard = async ({ user }: { user: User }) => {
+const UserCard = ({ user }: { user: User }) => {
+  const [session, setSession] = useState<Session | null>(null);
   const formatDate = (date: Date) => date.toLocaleDateString();
-  const session = await GetSession();
+  useEffect(() => {
+    async function GettingSession() {
+      const getsess = await GetSession();
+      setSession(getsess);
+    }
+    GettingSession();
+  }, []);
 
   // Don't render if the user is the logged-in user
   if (!session) return null;

@@ -18,23 +18,12 @@ const group1 = [
     role: ["ADMIN", "STUDENT", "TEACHER"],
   },
   {
-    name: "Apply Leave",
+    name: "Leave Dashboard",
     icon: <Home size={20} />,
-    url: "/apply-leave",
-    role: ["STUDENT", "TEACHER"],
+    url: "/leave",
+    role: ["STUDENT", "TEACHER", "ADMIN"],
   },
-  {
-    name: "Leave Request",
-    icon: <Home size={20} />,
-    url: "/leave-request",
-    role: ["ADMIN", "TEACHER"],
-  },
-  {
-    name: "Verify User",
-    icon: <Home size={20} />,
-    url: "/verify-user",
-    role: ["ADMIN"],
-  },
+
   {
     name: "Users",
     icon: <Home size={20} />,

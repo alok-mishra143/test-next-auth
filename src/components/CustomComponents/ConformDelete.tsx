@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface IConfirmDelete {
   id: string;
@@ -24,11 +25,12 @@ export function ConfirmDelete({ id }: IConfirmDelete) {
   const router = useRouter();
   const handleDelete = async () => {
     try {
-      const res = await DeleteUser(id);
+      await DeleteUser(id);
+      toast.warning("Account deleted successfully");
       router.refresh();
-      console.log("Delete response:", res);
     } catch (error) {
       console.error("Delete error:", error);
+      toast.error("Failed to delete account");
     }
   };
   return (

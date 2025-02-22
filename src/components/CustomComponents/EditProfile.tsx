@@ -3,6 +3,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
 import {
   Select,
   SelectContent,
@@ -35,6 +37,8 @@ import {
 } from "../ui/form";
 import { z } from "zod";
 import { userSchema } from "@/lib/zod";
+import { updateProfile } from "@/action/UserDasAction";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
@@ -45,9 +49,9 @@ interface User {
   phone: string | null;
   department: string | null;
   class: string | null;
+  isVerified: boolean;
   role: "STUDENT" | "TEACHER" | "ADMIN";
   address: string | null;
-  isVerified: boolean;
   onboardingCompleted: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -59,7 +63,9 @@ interface IEditProfile {
 }
 
 const EditProfile = ({ userFrom, role }: IEditProfile) => {
+  const router = useRouter();
   const [open, setOpen] = useState(false); // State to control dialog open/close
+  const [loading, setLoading] = useState(false);
   type UserFormData = z.infer<typeof userSchema>;
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
@@ -68,6 +74,7 @@ const EditProfile = ({ userFrom, role }: IEditProfile) => {
       email: userFrom.email || "",
       phone: userFrom.phone || "",
       address: userFrom.address || "",
+      isVerified: userFrom.isVerified,
       gender: userFrom.gender as "MALE" | "FEMALE" | "OTHERS",
       department: userFrom.department || "",
       class: userFrom.class || "",
@@ -75,8 +82,20 @@ const EditProfile = ({ userFrom, role }: IEditProfile) => {
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+
+    try {
+      await updateProfile({ id: userFrom.id, data });
+      toast.success("Profile updated successfully");
+      setOpen(false);
+    } catch (error) {
+      toast.error("Failed to update profile");
+      console.error(error);
+    } finally {
+      setLoading(false);
+      router.refresh();
+    }
   };
 
   return (
@@ -108,21 +127,22 @@ const EditProfile = ({ userFrom, role }: IEditProfile) => {
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="email"
-              disabled={role !== "ADMIN"}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="test@gmail.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {role == "ADMIN" && (
+              <FormField
+                control={form.control}
+                name="email"
+                disabled={role !== "ADMIN"}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="test@gmail.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
@@ -151,6 +171,39 @@ const EditProfile = ({ userFrom, role }: IEditProfile) => {
                 </FormItem>
               )}
             />
+
+            {/* Edit is Verified */}
+            {role === "ADMIN" && (
+              <FormField
+                control={form.control}
+                name="isVerified"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Isverifed <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        {...field}
+                        value={field.value ? "TRUE" : "FALSE"}
+                        onValueChange={(value) =>
+                          field.onChange(value === "TRUE")
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="TRUE">TRUE</SelectItem>
+                          <SelectItem value="FALSE">FALSE</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Gender field using Select pattern */}
             <FormField
@@ -182,35 +235,37 @@ const EditProfile = ({ userFrom, role }: IEditProfile) => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="role"
-              disabled={role !== "ADMIN"}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Role <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Select
-                      {...field}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select your Role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="STUDENT">STUDENT</SelectItem>
-                        <SelectItem value="TEACHER">TEACHER</SelectItem>
-                        <SelectItem value="ADMIN">ADMIN</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {role === "ADMIN" && (
+              <FormField
+                control={form.control}
+                name="role"
+                disabled={role !== "ADMIN"}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Role <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select your Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="STUDENT">STUDENT</SelectItem>
+                          <SelectItem value="TEACHER">TEACHER</SelectItem>
+                          <SelectItem value="ADMIN">ADMIN</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
@@ -246,7 +301,7 @@ const EditProfile = ({ userFrom, role }: IEditProfile) => {
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit">{loading ? "Saving..." : "Save"}</Button>
             </DialogFooter>
           </form>
         </Form>

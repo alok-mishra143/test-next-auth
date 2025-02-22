@@ -1,3 +1,4 @@
+import { is } from "drizzle-orm";
 import { object, z } from "zod";
 
 export const signInSchema = object({
@@ -58,6 +59,7 @@ export const userSchema = z.object({
   phone: z.string().min(1, "Phone number is required"),
   address: z.string().min(1, "Address is required"),
   gender: z.enum(["MALE", "FEMALE", "OTHERS"]),
+  isVerified: z.boolean(),
   department: z.string().optional(),
   class: z.string().optional(),
   role: z.enum(["STUDENT", "TEACHER", "ADMIN"]).default("STUDENT"),
