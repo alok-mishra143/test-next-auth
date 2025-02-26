@@ -1,16 +1,40 @@
 "use server";
 import { users } from "@/server/db/schema";
 import { db } from "@/server/db";
-import { eq, like } from "drizzle-orm";
+import { asc, desc, eq, like } from "drizzle-orm";
 
-export const GetAllUsers = async (search: string) => {
+type UserColumns = keyof typeof users._.columns;
+
+interface GetAllUsersProps {
+  search: string;
+  page: number;
+  sort: { value: UserColumns; sort: string };
+  Filters?: {
+    roles: string[];
+    verified: string[];
+  };
+}
+
+export const GetAllUsers = async (values: GetAllUsersProps) => {
+  const { search, page, Filters, sort } = values;
+  const { roles, verified } = Filters || { roles: [], verified: [] };
+
   try {
-    const result = await db
-      .select()
+    console.log(sort);
+
+    let query = db
+      .select({})
       .from(users)
-      .where((user) => like(user.name, `%${search}%`))
-      .orderBy(users.name)
-      .then((result) => result);
+      .where(like(users.name, `%${search}%`))
+      .limit(page);
+
+    if (sort?.value && sort?.sort && users[sort.value]) {
+      query = query.orderBy(
+        sort.sort === "asc" ? asc(users[sort.value]) : desc(users[sort.value])
+      );
+    }
+
+    const result = await query;
     return result;
   } catch (error) {
     console.error(error);

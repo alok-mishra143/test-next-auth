@@ -19,20 +19,42 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+interface FilterButtonProps {
+  selectedRoles: string[];
+  selectedVerified: string[];
+  selectedSort: { value: string; sort: string }; // Fixed `name` -> `value`
+  setSelectedRoles: (roles: string[]) => void;
+  setSelectedVerified: (verified: string[]) => void;
+  setSelectedSort: (sort: { value: string; sort: string }) => void; // Fixed setter function type
+}
+
 const roles = ["ADMIN", "STUDENT", "TEACHER"];
 const verifiedOptions = ["TRUE", "FALSE"];
 const sortOptions = [
-  { label: "Sort by name (A-Z)", value: "name-asc" },
-  { label: "Sort by name (Z-A)", value: "name-desc" },
-  { label: "Sort by created at (Oldest first)", value: "created-asc" },
-  { label: "Sort by created at (Newest first)", value: "created-desc" },
+  { label: "Sort by name (A-Z)", value: "name", sort: "asc" },
+  { label: "Sort by name (Z-A)", value: "name", sort: "desc" },
+  {
+    label: "Sort by created at (Oldest first)",
+    value: "createdAt",
+    sort: "asc",
+  },
+  {
+    label: "Sort by created at (Newest first)",
+    value: "createdAt",
+    sort: "desc",
+  },
 ];
 
-export default function FilterButton() {
+export default function FilterButton(params: FilterButtonProps) {
+  const {
+    setSelectedRoles,
+    setSelectedVerified,
+    setSelectedSort,
+    selectedRoles,
+    selectedVerified,
+    selectedSort,
+  } = params;
   const [open, setOpen] = React.useState(false);
-  const [selectedRoles, setSelectedRoles] = React.useState<string[]>([]);
-  const [selectedVerified, setSelectedVerified] = React.useState<string[]>([]);
-  const [selectedSort, setSelectedSort] = React.useState("");
 
   console.log(selectedRoles, selectedVerified, selectedSort);
 
@@ -44,7 +66,7 @@ export default function FilterButton() {
   const clearFilters = () => {
     setSelectedRoles([]);
     setSelectedVerified([]);
-    setSelectedSort("");
+    setSelectedSort({ value: "createdAt", sort: "desc" });
   };
 
   return (
@@ -94,11 +116,10 @@ export default function FilterButton() {
                           : ""
                       }`}
                       onClick={() => {
-                        setSelectedRoles((prev) =>
-                          prev.includes(role)
-                            ? prev.filter((r) => r !== role)
-                            : [...prev, role]
-                        );
+                        const newRoles = selectedRoles.includes(role)
+                          ? selectedRoles.filter((r) => r !== role)
+                          : [...selectedRoles, role];
+                        setSelectedRoles(newRoles);
                       }}
                     >
                       {selectedRoles.includes(role) && (
@@ -130,11 +151,10 @@ export default function FilterButton() {
                           : ""
                       }`}
                       onClick={() => {
-                        setSelectedVerified((prev) =>
-                          prev.includes(option)
-                            ? prev.filter((o) => o !== option)
-                            : [...prev, option]
-                        );
+                        const newVerified = selectedVerified.includes(option)
+                          ? selectedVerified.filter((o) => o !== option)
+                          : [...selectedVerified, option];
+                        setSelectedVerified(newVerified);
                       }}
                     >
                       {selectedVerified.includes(option) && (
@@ -152,14 +172,23 @@ export default function FilterButton() {
             {/* Sort Section */}
             <div className="space-y-4">
               <h5 className="text-sm font-medium leading-none">Sort</h5>
-              <Select value={selectedSort} onValueChange={setSelectedSort}>
+              <Select
+                value={`${selectedSort.value}-${selectedSort.sort}`} // Unique value
+                onValueChange={(value) => {
+                  const [selectedValue, selectedSort] = value.split("-");
+                  setSelectedSort({ value: selectedValue, sort: selectedSort });
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select sorting..." />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     {sortOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
+                      <SelectItem
+                        key={`${option.value}-${option.sort}`}
+                        value={`${option.value}-${option.sort}`}
+                      >
                         {option.label}
                       </SelectItem>
                     ))}
