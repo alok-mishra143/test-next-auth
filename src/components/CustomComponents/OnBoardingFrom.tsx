@@ -27,7 +27,11 @@ import {
 } from "@/components/ui/select";
 import { onboardingValidationSchema } from "@/lib/zod";
 import { Textarea } from "../ui/textarea";
-import { OnBoardingSubmit } from "@/action/Useraction";
+import {
+  GetSession,
+  OnBoardingSubmit,
+  UpdateUserOnboarding,
+} from "@/action/Useraction";
 
 type OnBoardingFrom = z.infer<typeof onboardingValidationSchema>;
 
@@ -47,6 +51,7 @@ const OnBoardingFrom = ({ UserData }: UserDataProps) => {
   });
 
   const onSubmit = async (data: OnBoardingFrom) => {
+    const session = await GetSession();
     setLoading(true);
     console.log("inside submmit");
     console.log("this is form data ", data);
@@ -56,7 +61,11 @@ const OnBoardingFrom = ({ UserData }: UserDataProps) => {
         UserData: data,
       });
       toast.success("Onboarding Successfull Completed");
-      router.push("/login");
+      if (session?.user.id) {
+        await UpdateUserOnboarding({ id: session?.user.id });
+      }
+      router.push("/");
+
       console.log("result", result);
     } catch (error) {
       const errorMessage =
@@ -72,7 +81,8 @@ const OnBoardingFrom = ({ UserData }: UserDataProps) => {
   console.log(errors);
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
+    <div className="flex items-center justify-center min-h-screen  flex-col">
+      <h1 className="text-lg font-bold">Please Completed the OnBoarding</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

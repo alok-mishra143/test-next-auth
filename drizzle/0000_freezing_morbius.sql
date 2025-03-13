@@ -40,6 +40,7 @@ CREATE TABLE "users" (
 	"role" "user_role" DEFAULT 'STUDENT' NOT NULL,
 	"address" varchar(255) DEFAULT '',
 	"is_verified" boolean DEFAULT false NOT NULL,
+	"onboarding_completed" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
