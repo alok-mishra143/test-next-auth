@@ -117,7 +117,7 @@ const SignupPage = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Gender <span className="text-red-500">*</span>
+                        Role <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Select
