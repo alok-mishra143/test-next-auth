@@ -53,8 +53,7 @@ const OnBoardingFrom = ({ UserData }: UserDataProps) => {
   const onSubmit = async (data: OnBoardingFrom) => {
     const session = await GetSession();
     setLoading(true);
-    console.log("inside submmit");
-    console.log("this is form data ", data);
+
     try {
       const result = await OnBoardingSubmit({
         id: UserData.id,

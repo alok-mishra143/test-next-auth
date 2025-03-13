@@ -73,7 +73,7 @@ const SignupPage = () => {
       try {
         const session = await GetSession();
         if (session) {
-          router.push("/");
+          router.push("/dashboard");
         }
       } catch (error) {
         console.error("Session error:", error);

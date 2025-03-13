@@ -40,3 +40,27 @@ interface OnBoardingProps {
   department?: string;
   class?: string;
 }
+
+interface UpdateUser extends OnBoardingProps {
+  name: string;
+  email: string;
+  role: "STUDENT" | "TEACHER" | "ADMIN";
+  isverified: boolean;
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  gender: string | null;
+  profileImage?: string | null;
+  phone: string | null;
+  department: string | null;
+  class: string | null;
+  role: "STUDENT" | "TEACHER" | "ADMIN";
+  address: string | null;
+  isVerified: boolean;
+  onboardingCompleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}

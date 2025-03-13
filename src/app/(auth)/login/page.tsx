@@ -48,7 +48,6 @@ const LoginPage = () => {
         email: values.email,
         password: values.password,
       });
-      console.log("result", result);
 
       if (result?.error) {
         toast.error("Invalide Crediential or Password"); // Display error message
@@ -65,11 +64,11 @@ const LoginPage = () => {
           } else if (userData.onboardingCompleted === false) {
             router.push(`/onboarding/${session?.user.id}`);
           } else if (userData.onboardingCompleted === true) {
-            router.push(`/`);
+            router.push(`/dashboard`);
           }
         }
 
-        router.push("/");
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -83,7 +82,7 @@ const LoginPage = () => {
       try {
         const session = await GetSession();
         if (session) {
-          router.push(`/`);
+          router.push(`/dashboard`);
         }
       } catch (error) {
         console.error("Session error:", error);
